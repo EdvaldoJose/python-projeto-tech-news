@@ -26,3 +26,4 @@ def scrape_news(html_content):
 def get_tech_news(amount):
     """Seu código deve vir aqui"""
     raise NotImplementedError
+    pass
