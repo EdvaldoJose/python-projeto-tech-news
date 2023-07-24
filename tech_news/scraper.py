@@ -5,7 +5,6 @@ import time
 
 
 def fetch(url):
-    # raise NotImplementedError
     try:
         time.sleep(1)
         response = requests.get(
@@ -16,6 +15,7 @@ def fetch(url):
         return response.text
     except requests.ReadTimeout:
         return None
+    raise NotImplementedError
 
 
 # Requisito 2
@@ -36,7 +36,29 @@ def scrape_next_page_link(html_content):
 
 # Requisito 4
 def scrape_news(html_content):
-    """Seu código deve vir aqui"""
+    news_dictionary = {}
+    selector = Selector(text=html_content)
+    news_dictionary["url"] = selector.css(
+        "head link[rel=canonical]::attr(href)").get()
+
+    news_dictionary["title"] = selector.css(
+        ".entry-title::text").get().strip(" \xa0")
+
+    news_dictionary["timestamp"] = selector.css(
+        ".meta-date::text").get()
+
+    news_dictionary["writer"] = selector.css(".author a::text").get()
+
+    news_dictionary["reading_time"] = int(selector.css(
+        ".meta-reading-time::text").re_first(r"\d+"))
+
+    first_paragraph_news = selector.xpath("(//p)[1]//text()").getall()
+
+    news_dictionary["summary"] = "".join(first_paragraph_news).strip(" \xa0")
+
+    news_dictionary["category"] = selector.css(
+        ".meta-category .label::text").get()
+    return news_dictionary
     raise NotImplementedError
 
 
